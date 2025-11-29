@@ -32,7 +32,9 @@ u = Var "u"
 
 
 
+-- ----------------------------------------------------------------------
 -- funcion que toma una proposicion y crea su arbol de sintaxis abstracta
+-- ----------------------------------------------------------------------
 arbolDeSintaxisAbstracta :: Prop -> Arbol String
 arbolDeSintaxisAbstracta (Var x) = (Node x []) 
 arbolDeSintaxisAbstracta (Cons _) = Void
@@ -42,7 +44,10 @@ arbolDeSintaxisAbstracta (Or p q) =  (Node "v" [arbolDeSintaxisAbstracta p, arbo
 arbolDeSintaxisAbstracta (Impl p q) = (Node "=>" [arbolDeSintaxisAbstracta p, arbolDeSintaxisAbstracta q])
 arbolDeSintaxisAbstracta (Syss p q) = (Node "<=>" [arbolDeSintaxisAbstracta p, arbolDeSintaxisAbstracta q])
 
+
+-- ------------------------------------------------------------------------------------------------------------------------
 -- funcion que recibe un arbol de sintaxis abstracta y regresa la formula de la logica proposiiconal asociada a dicho arbol
+-- ------------------------------------------------------------------------------------------------------------------------
 devuelveFormula :: Arbol String -> Prop
 devuelveFormula (Node "Var" [Node x []]) = (Var x)
 devuelveFormula Void = Cons True
@@ -53,9 +58,9 @@ devuelveFormula (Node "=>" [p, q]) = (Impl (devuelveFormula p) (devuelveFormula 
 devuelveFormula (Node "<=>" [p, q]) = (Syss (devuelveFormula p) (devuelveFormula q))
 
 
-
-
+-- -----------------------------------------------------
 -- funcion que cuenta el numero de elementos de un arbol
+-- -----------------------------------------------------
 numeroElementos :: Arbol a -> Int
 numeroElementos Void = 0
 numeroElementos (Node x []) = 1
@@ -66,7 +71,9 @@ numeroElementos (Node x (y:ys)) = 1 + numeroElementos y + contarElemenLista ys
         contarElemenLista (x:xs) = numeroElementos x + contarElemenLista xs
 
 
+-- -----------------------------------------
 -- funcion que busca un elemento en un arbol
+-- -----------------------------------------
 busca :: Eq a => Arbol a -> a -> Bool
 busca Void _ = False
 busca (Node x ys) y =
@@ -84,10 +91,25 @@ buscaEnLista (t:ts) y =
 
 
 
---Si quiero sacar la altura del arbol
+-- -----------------------------------
+-- Si quiero sacar la altura del arbol
+-- -----------------------------------
 maximo :: Int -> Int -> Int
 maximo x y = if x > y then x else y
 
 altura :: Arbol a -> Int
 altura Void = 0
 altura (Node x (y:ys)) = 1 + maximo (altura y) (altura ys)
+
+-- ------------------------------------------
+-- Funcion que suma los elementos de un arbol
+-- ------------------------------------------
+sumaElementos :: Arbol Int -> Int
+sumaElementos void = 0
+sumaElementos (Node x []) = x
+sumaElementos (Node x [y]) = x + sumaElementos y
+sumaElementos (Node x (y:ys)) = x + sumaElementosLista ys
+    where 
+        sumaElementosLista [] = 0  
+        sumaElementosLista [x] = sumaElementos x
+        sumaElementosLista (x:xs) = sumaElementos x + sumaElementosLista xs
