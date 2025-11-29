@@ -90,26 +90,47 @@ buscaEnLista (t:ts) y =
         else buscaEnLista ts y
 
 
+-- -----------------------------------------
+-- Funcion que calcula la altura de un arbol
+-- -----------------------------------------
+altura :: Arbol a -> Int
+altura Void = 0
+altura (Node x []) = 1
+altura (Node x (y:ys)) = 1 + maximo (altura y) (alturaListaArboles ys)
+    where 
+        alturaListaArboles [] = 0
+        alturaListaArboles (x:xs) = maximo (altura x) (alturaListaArboles xs)
 
--- -----------------------------------
--- Si quiero sacar la altura del arbol
--- -----------------------------------
+-- Funcion auxiliar que calcula el maximo entre 2 numeros
 maximo :: Int -> Int -> Int
 maximo x y = if x > y then x else y
 
-altura :: Arbol a -> Int
-altura Void = 0
-altura (Node x (y:ys)) = 1 + maximo (altura y) (altura ys)
 
 -- ------------------------------------------
 -- Funcion que suma los elementos de un arbol
 -- ------------------------------------------
 sumaElementos :: Arbol Int -> Int
-sumaElementos void = 0
+sumaElementos Void = 0
 sumaElementos (Node x []) = x
-sumaElementos (Node x [y]) = x + sumaElementos y
-sumaElementos (Node x (y:ys)) = x + sumaElementosLista ys
+sumaElementos (Node x (y:ys)) = x + sumaElementos y + sumaElementosLista ys
     where 
         sumaElementosLista [] = 0  
         sumaElementosLista [x] = sumaElementos x
         sumaElementosLista (x:xs) = sumaElementos x + sumaElementosLista xs
+
+
+-- -------------------------------------
+-- (Espejo) funcion que voltea el arbol
+-- -------------------------------------
+espejo :: Arbol a -> Arbol a
+espejo Void = Void
+espejo (Node x []) = (Node x [])
+espejo (Node x (y:ys)) = (Node x (snoc (espejoEnListaDeArboles ys) y))
+    where
+        espejoEnListaDeArboles [] = []
+        espejoEnListaDeArboles (x:xs) = xs ++ [(espejo x)]   
+
+-- Funcion auxiliar snoc
+snoc :: [a] -> a -> [a]
+snoc [] x = [x]
+snoc xs y = xs ++ [y]
