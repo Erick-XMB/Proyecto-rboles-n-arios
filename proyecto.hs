@@ -1,4 +1,12 @@
 -- tipos de datos
+data Operador = 
+    Not |
+    And |
+    Or |
+    Impl |
+    Syss 
+    deriving (Eq)
+
 data Arbol a = Void | Node a [Arbol a] deriving(Eq, Show)
 
 data Prop = 
@@ -11,6 +19,8 @@ data Prop =
     Syss Prop Prop 
     deriving (Eq)
 
+
+
 -- Imprimir el tipo de dato Prop
 instance Show Prop where
     show (Cons True) = "Verdadero"
@@ -21,6 +31,14 @@ instance Show Prop where
     show (And p q) = "(" ++ show p ++ " ∧ " ++ show q ++ ")"
     show (Impl p q) = "(" ++ show p ++ " → " ++ show q ++ ")"
     show (Syss p q) = "(" ++ show p ++ " ↔ " ++ show q ++ ")"
+
+-- Imprimir el tipo de dato Operador
+instance Show Operador where
+    show (Not) = "¬" 
+    show (Or) = "v"
+    show (And) = " ∧ "
+    show (Impl) = " → "
+    show (Syss) = " ↔ " 
 
 -- Fórmulas proposicionales (Variables atómicas)
 p, q, r, s, t, u :: Prop
@@ -43,14 +61,14 @@ type Estado = [String]
 -- --------------------------------------------------------------------------
 -- 1. funcion que toma una proposicion y crea su arbol de sintaxis abstracta
 -- -------------------------------------------------------------------------
-arbolDeSintaxisAbstracta :: Prop -> Arbol String
+arbolDeSintaxisAbstracta :: Prop -> Arbol Operador
 arbolDeSintaxisAbstracta (Var x) = (Node x []) 
 arbolDeSintaxisAbstracta (Cons _) = Void
-arbolDeSintaxisAbstracta (Not p) = (Node "~" [arbolDeSintaxisAbstracta p] )
-arbolDeSintaxisAbstracta (And p q) = (Node "^" [arbolDeSintaxisAbstracta p, arbolDeSintaxisAbstracta q])
-arbolDeSintaxisAbstracta (Or p q) =  (Node "v" [arbolDeSintaxisAbstracta p, arbolDeSintaxisAbstracta q])
-arbolDeSintaxisAbstracta (Impl p q) = (Node "=>" [arbolDeSintaxisAbstracta p, arbolDeSintaxisAbstracta q])
-arbolDeSintaxisAbstracta (Syss p q) = (Node "<=>" [arbolDeSintaxisAbstracta p, arbolDeSintaxisAbstracta q])
+arbolDeSintaxisAbstracta (Not p) = (Node Not [arbolDeSintaxisAbstracta p] )
+arbolDeSintaxisAbstracta (And p q) = (Node And [arbolDeSintaxisAbstracta p, arbolDeSintaxisAbstracta q])
+arbolDeSintaxisAbstracta (Or p q) =  (Node Or [arbolDeSintaxisAbstracta p, arbolDeSintaxisAbstracta q])
+arbolDeSintaxisAbstracta (Impl p q) = (Node Impl [arbolDeSintaxisAbstracta p, arbolDeSintaxisAbstracta q])
+arbolDeSintaxisAbstracta (Syss p q) = (Node Syss [arbolDeSintaxisAbstracta p, arbolDeSintaxisAbstracta q])
 
 
 
@@ -60,11 +78,11 @@ arbolDeSintaxisAbstracta (Syss p q) = (Node "<=>" [arbolDeSintaxisAbstracta p, a
 devuelveFormula :: Arbol String -> Prop
 devuelveFormula (Node "Var" [Node x []]) = (Var x)
 devuelveFormula Void = Cons True
-devuelveFormula (Node "~" [p]) = (Not (devuelveFormula p))
-devuelveFormula (Node "^" [p, q]) = (And (devuelveFormula p) (devuelveFormula q))
-devuelveFormula (Node "v" [p, q]) = (Or (devuelveFormula p) (devuelveFormula q))
-devuelveFormula (Node "=>" [p, q]) = (Impl (devuelveFormula p) (devuelveFormula q))
-devuelveFormula (Node "<=>" [p, q]) = (Syss (devuelveFormula p) (devuelveFormula q))
+devuelveFormula (Node Not [p]) = (Not (devuelveFormula p))
+devuelveFormula (Node And [p, q]) = (And (devuelveFormula p) (devuelveFormula q))
+devuelveFormula (Node Or [p, q]) = (Or (devuelveFormula p) (devuelveFormula q))
+devuelveFormula (Node Impl [p, q]) = (Impl (devuelveFormula p) (devuelveFormula q))
+devuelveFormula (Node Syss [p, q]) = (Syss (devuelveFormula p) (devuelveFormula q))
 
 
 
