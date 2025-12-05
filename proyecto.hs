@@ -83,7 +83,7 @@ arbolDeSintaxisAbstracta (Syss p q) = (Node SyssOp [arbolDeSintaxisAbstracta p, 
 -- 2. funcion que recibe un arbol de sintaxis abstracta y regresa la formula de la logica proposiiconal asociada a dicho arbol
 -- ---------------------------------------------------------------------------------------------------------------------------
 devuelveFormula :: Arbol Operador -> Prop
-devuelveFormula (Node (VarOp x) [Node VarOp2 []]) = (Var x)
+devuelveFormula (Node (VarOp x) []) = (Var x)
 devuelveFormula Void = Cons True
 devuelveFormula (Node NotOp [p]) = (Not (devuelveFormula p))
 devuelveFormula (Node AndOp [p, q]) = (And (devuelveFormula p) (devuelveFormula q))
@@ -124,7 +124,7 @@ evaluaArbol (Node NotOp [p]) i = not (evaluaArbol p i)
 evaluaArbol (Node AndOp [p, q]) i = evaluaArbol p i && evaluaArbol q i
 evaluaArbol (Node OrOp [p, q]) i = evaluaArbol p i || evaluaArbol q i 
 evaluaArbol (Node ImplOp [p, q]) i = not (evaluaArbol p i ) || (evaluaArbol q i)
-evaluaArbol (Node SyssOp [p, q]) i = (not (evaluaArbol p i ) || (evaluaArbol q i)) && not (evaluaArbol q i ) || (evaluaArbol p i)
+evaluaArbol (Node SyssOp [p, q]) i = (not (evaluaArbol p i ) || evaluaArbol q i) && (not (evaluaArbol q i ) || evaluaArbol p i)
 
 
 
