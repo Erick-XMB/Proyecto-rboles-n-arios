@@ -1,10 +1,13 @@
 -- tipos de datos
 data Operador = 
-    Not |
-    And |
-    Or |
-    Impl |
-    Syss 
+    VarOp String |
+    VarOp2 |
+    ConsOp Bool |
+    NotOp |
+    AndOp |
+    OrOp |
+    ImplOp |
+    SyssOp 
     deriving (Eq)
 
 data Arbol a = Void | Node a [Arbol a] deriving(Eq, Show)
@@ -34,11 +37,15 @@ instance Show Prop where
 
 -- Imprimir el tipo de dato Operador
 instance Show Operador where
-    show (Not) = "¬" 
-    show (Or) = "v"
-    show (And) = " ∧ "
-    show (Impl) = " → "
-    show (Syss) = " ↔ " 
+    show (VarOp p) = p 
+    show (VarOp2) = "Var" 
+    show (ConsOp True) = "Verdadero" 
+    show (ConsOp False) = "Falso" 
+    show (NotOp) = "¬" 
+    show (OrOp) = "v"
+    show (AndOp) = " ∧ "
+    show (ImplOp) = " → "
+    show (SyssOp) = " ↔ " 
 
 -- Fórmulas proposicionales (Variables atómicas)
 p, q, r, s, t, u :: Prop
@@ -62,27 +69,27 @@ type Estado = [String]
 -- 1. funcion que toma una proposicion y crea su arbol de sintaxis abstracta
 -- -------------------------------------------------------------------------
 arbolDeSintaxisAbstracta :: Prop -> Arbol Operador
-arbolDeSintaxisAbstracta (Var x) = (Node x []) 
+arbolDeSintaxisAbstracta (Var x) = (Node (VarOp x) []) 
 arbolDeSintaxisAbstracta (Cons _) = Void
-arbolDeSintaxisAbstracta (Not p) = (Node Not [arbolDeSintaxisAbstracta p] )
-arbolDeSintaxisAbstracta (And p q) = (Node And [arbolDeSintaxisAbstracta p, arbolDeSintaxisAbstracta q])
-arbolDeSintaxisAbstracta (Or p q) =  (Node Or [arbolDeSintaxisAbstracta p, arbolDeSintaxisAbstracta q])
-arbolDeSintaxisAbstracta (Impl p q) = (Node Impl [arbolDeSintaxisAbstracta p, arbolDeSintaxisAbstracta q])
-arbolDeSintaxisAbstracta (Syss p q) = (Node Syss [arbolDeSintaxisAbstracta p, arbolDeSintaxisAbstracta q])
+arbolDeSintaxisAbstracta (Not p) = (Node NotOp [arbolDeSintaxisAbstracta p] )
+arbolDeSintaxisAbstracta (And p q) = (Node AndOp [arbolDeSintaxisAbstracta p, arbolDeSintaxisAbstracta q])
+arbolDeSintaxisAbstracta (Or p q) =  (Node OrOp [arbolDeSintaxisAbstracta p, arbolDeSintaxisAbstracta q])
+arbolDeSintaxisAbstracta (Impl p q) = (Node ImplOp [arbolDeSintaxisAbstracta p, arbolDeSintaxisAbstracta q])
+arbolDeSintaxisAbstracta (Syss p q) = (Node SyssOp [arbolDeSintaxisAbstracta p, arbolDeSintaxisAbstracta q])
 
 
 
 -- ---------------------------------------------------------------------------------------------------------------------------
 -- 2. funcion que recibe un arbol de sintaxis abstracta y regresa la formula de la logica proposiiconal asociada a dicho arbol
 -- ---------------------------------------------------------------------------------------------------------------------------
-devuelveFormula :: Arbol String -> Prop
-devuelveFormula (Node "Var" [Node x []]) = (Var x)
+devuelveFormula :: Arbol Operador -> Prop
+devuelveFormula (Node (VarOp x) [Node VarOp2 []]) = (Var x)
 devuelveFormula Void = Cons True
-devuelveFormula (Node Not [p]) = (Not (devuelveFormula p))
-devuelveFormula (Node And [p, q]) = (And (devuelveFormula p) (devuelveFormula q))
-devuelveFormula (Node Or [p, q]) = (Or (devuelveFormula p) (devuelveFormula q))
-devuelveFormula (Node Impl [p, q]) = (Impl (devuelveFormula p) (devuelveFormula q))
-devuelveFormula (Node Syss [p, q]) = (Syss (devuelveFormula p) (devuelveFormula q))
+devuelveFormula (Node NotOp [p]) = (Not (devuelveFormula p))
+devuelveFormula (Node AndOp [p, q]) = (And (devuelveFormula p) (devuelveFormula q))
+devuelveFormula (Node OrOp [p, q]) = (Or (devuelveFormula p) (devuelveFormula q))
+devuelveFormula (Node ImplOp [p, q]) = (Impl (devuelveFormula p) (devuelveFormula q))
+devuelveFormula (Node SyssOp [p, q]) = (Syss (devuelveFormula p) (devuelveFormula q))
 
 
 
@@ -108,16 +115,16 @@ interpretacion (Syss p q) i = interpretacion (Impl p q) i && interpretacion (Imp
 -----------------------------------------------------------------------------------------------------------------------------
 -- 3. funcion que recibe un arbol y un estado de las variables para devolver la evaluacion de la formula asociada al arbol --
 -----------------------------------------------------------------------------------------------------------------------------
-evaluaArbol :: Arbol String -> Estado -> Bool
-evaluaArbol (Node "Var" [Node x []]) i = interpretacion (Var x) i
-evaluaArbol (Node x []) i = isIn x i
+evaluaArbol :: Arbol Operador -> Estado -> Bool
+evaluaArbol (Node VarOp2 [Node (VarOp x)  []]) i = interpretacion (Var x) i
+evaluaArbol (Node (VarOp x) []) i = isIn x i
 evaluaArbol Void _ = False
 
-evaluaArbol (Node "~" [p]) i = not (evaluaArbol p i)
-evaluaArbol (Node "^" [p, q]) i = evaluaArbol p i && evaluaArbol q i
-evaluaArbol (Node "v" [p, q]) i = evaluaArbol p i || evaluaArbol q i 
-evaluaArbol (Node "=>" [p, q]) i = not (evaluaArbol p i ) || (evaluaArbol q i)
-evaluaArbol (Node "<=>" [p, q]) i = (not (evaluaArbol p i ) || (evaluaArbol q i)) && not (evaluaArbol q i ) || (evaluaArbol p i)
+evaluaArbol (Node NotOp [p]) i = not (evaluaArbol p i)
+evaluaArbol (Node AndOp [p, q]) i = evaluaArbol p i && evaluaArbol q i
+evaluaArbol (Node OrOp [p, q]) i = evaluaArbol p i || evaluaArbol q i 
+evaluaArbol (Node ImplOp [p, q]) i = not (evaluaArbol p i ) || (evaluaArbol q i)
+evaluaArbol (Node SyssOp [p, q]) i = (not (evaluaArbol p i ) || (evaluaArbol q i)) && not (evaluaArbol q i ) || (evaluaArbol p i)
 
 
 
@@ -129,7 +136,7 @@ evaluaArbol (Node "<=>" [p, q]) i = (not (evaluaArbol p i ) || (evaluaArbol q i)
 -- -----------------------------------------------------------
 -- 1. funcion que cuenta el numero de elementos de un arbol --
 -- -----------------------------------------------------------
-cantidadElementos :: Arbol a -> Int
+cantidadElementos :: Arbol Operador -> Int
 cantidadElementos Void = 0
 cantidadElementos (Node x []) = 1
 cantidadElementos (Node x [y]) = 1 + cantidadElementos y
