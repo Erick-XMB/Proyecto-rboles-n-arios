@@ -1,7 +1,7 @@
 -- tipos de datos
 data Operador = 
     VarOp String |
-    VarOp2 |
+    VarGenericaOp |
     ConsOp Bool |
     NotOp |
     AndOp |
@@ -38,7 +38,7 @@ instance Show Prop where
 -- Imprimir el tipo de dato Operador
 instance Show Operador where
     show (VarOp p) = p 
-    show (VarOp2) = "Var" 
+    show (VarGenericaOp) = "Var" 
     show (ConsOp True) = "Verdadero" 
     show (ConsOp False) = "Falso" 
     show (NotOp) = "¬" 
@@ -117,7 +117,7 @@ interpretacion (Syss p q) i = interpretacion (Impl p q) i && interpretacion (Imp
 -- 3. funcion que recibe un arbol y un estado de las variables para devolver la evaluacion de la formula asociada al arbol --
 -----------------------------------------------------------------------------------------------------------------------------
 evaluaArbol :: Arbol Operador -> Estado -> Bool
-evaluaArbol (Node VarOp2 [Node (VarOp x)  []]) i = interpretacion (Var x) i
+evaluaArbol (Node VarGenericaOp [Node (VarOp x)  []]) i = interpretacion (Var x) i
 evaluaArbol (Node (VarOp x) []) i = isIn x i
 evaluaArbol Void _ = False
 
@@ -170,9 +170,9 @@ busca (Node x ys) y =
 
 
 
--- ---------------------------------------------
--- 3. Funcion que suma los elementos de un arbol --
--- ---------------------------------------------
+-- ----------------------------------------------------------------------------
+-- 3. Funcion que suma los elementos de un arbol (solo funciona con enteros) --
+-- ----------------------------------------------------------------------------
 sumaElementos :: Arbol Int -> Int
 sumaElementos Void = 0
 sumaElementos (Node x []) = x

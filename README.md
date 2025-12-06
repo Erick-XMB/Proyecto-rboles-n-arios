@@ -11,6 +11,29 @@
 
 
 ## Comentarios
+
+1:
+Antes de explicar el por qué de la implementación del arbol n-ario, nos parece importante dar ejemplos de como ejecutar las
+funciones en la terminal. 
+
+En el caso de la seccion de "ARBOL DE SINTAXIS ABSTRACTA", para ejecutar las funciones que reciben un arbol como argumento 
+debe usarse un arbol como el del siguiente ejemplo:
+(Node AndOp [Node OrOp [Node NotOp [Node (VarOp "r") []], Node (VarOp "q") []],Node (VarOp "p") []])
+Esto se debe a que en este caso los arboles unicamente pueden tener en su raiz elementos de tipo "operador" (para ver todos
+los operadores que pueden ser usados se puede consultar la definicion de "Operador" que se encuentra en la segunda linea de 
+proyecto.hs) 
+
+Para funciones donde se recibe como argumento un arbol cuyas raices son de tipo "a" la situcion se simplifica, porque
+se puede usar cualquier tipo de dato como raiz. Basicamente el argumento debe tener la misma estructura del ejemplo 
+antes mencionado (pero con la posibilidad de usar enteros, strings o cualquier tipo de dato). 
+
+Cuando las funciones reciben como argumento una proposicion, el argumento debe tener una estructura similar a la del 
+siguiente ejemplo:
+(Impl (And (And (Impl (Var "p") (Not (Var "q"))) (Impl (Var "s") (Var "q"))) (Var "s")) (Var "p"))
+
+
+
+2: 
 Para hacer la implementación del árbol n-ario primero analizamos detalladamente la implementación del árbol binario realizada en clase (durante el laboratorio). 
 Al igual que siempre, tenemos un caso base y una función constructora que nos permite crear nuevos árboles a partir de los que ya tenemos. 
 
