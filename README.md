@@ -32,11 +32,14 @@ antes mencionado (pero con la posibilidad de usar enteros, strings o cualquier t
 
 Cuando las funciones reciben como argumento una proposicion, el argumento debe tener una estructura similar a la del 
 siguiente ejemplo:
+
 (Impl (And (And (Impl (Var "p") (Not (Var "q"))) (Impl (Var "s") (Var "q"))) (Var "s")) (Var "p"))
 
 
 
+
 2: 
+
 Para hacer la implementación del árbol n-ario primero analizamos detalladamente la implementación del árbol binario realizada en clase (durante el laboratorio). 
 Al igual que siempre, tenemos un caso base y una función constructora que nos permite crear nuevos árboles a partir de los que ya tenemos. 
 
