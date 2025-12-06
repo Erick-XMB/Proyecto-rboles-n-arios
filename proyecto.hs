@@ -125,7 +125,7 @@ evaluaArbol (Node NotOp [p]) i = not (evaluaArbol p i)
 evaluaArbol (Node AndOp [p, q]) i = evaluaArbol p i && evaluaArbol q i
 evaluaArbol (Node OrOp [p, q]) i = evaluaArbol p i || evaluaArbol q i 
 evaluaArbol (Node ImplOp [p, q]) i = not (evaluaArbol p i ) || (evaluaArbol q i)
-evaluaArbol (Node SyssOp [p, q]) i = (not (evaluaArbol p i ) || (evaluaArbol q i)) && not (evaluaArbol q i ) || (evaluaArbol p i)
+evaluaArbol (Node SyssOp [p, q]) i = (not (evaluaArbol p i ) || evaluaArbol q i) && (not (evaluaArbol q i ) || evaluaArbol p i)
 
 
 
