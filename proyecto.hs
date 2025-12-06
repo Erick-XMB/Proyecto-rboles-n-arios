@@ -30,7 +30,7 @@ instance Show Prop where
     show (Cons False) = "Falso"
     show (Var p) = p
     show (Not p) = "¬" ++ show p 
-    show (Or p q) = "(" ++ show p ++ "v" ++ show q ++ ")"
+    show (Or p q) = "(" ++ show p ++ " ∨ " ++ show q ++ ")"
     show (And p q) = "(" ++ show p ++ " ∧ " ++ show q ++ ")"
     show (Impl p q) = "(" ++ show p ++ " → " ++ show q ++ ")"
     show (Syss p q) = "(" ++ show p ++ " ↔ " ++ show q ++ ")"
@@ -42,7 +42,7 @@ instance Show Operador where
     show (ConsOp True) = "Verdadero" 
     show (ConsOp False) = "Falso" 
     show (NotOp) = "¬" 
-    show (OrOp) = "v"
+    show (OrOp) = " ∨ "
     show (AndOp) = " ∧ "
     show (ImplOp) = " → "
     show (SyssOp) = " ↔ " 
@@ -83,8 +83,9 @@ arbolDeSintaxisAbstracta (Syss p q) = (Node SyssOp [arbolDeSintaxisAbstracta p, 
 -- 2. funcion que recibe un arbol de sintaxis abstracta y regresa la formula de la logica proposiiconal asociada a dicho arbol
 -- ---------------------------------------------------------------------------------------------------------------------------
 devuelveFormula :: Arbol Operador -> Prop
-devuelveFormula (Node (VarOp x) [Node VarOp2 []]) = (Var x)
 devuelveFormula Void = Cons True
+devuelveFormula (Node (VarOp x) []) = (Var x)
+devuelveFormula (Node (ConsOp x) []) = Cons x
 devuelveFormula (Node NotOp [p]) = (Not (devuelveFormula p))
 devuelveFormula (Node AndOp [p, q]) = (And (devuelveFormula p) (devuelveFormula q))
 devuelveFormula (Node OrOp [p, q]) = (Or (devuelveFormula p) (devuelveFormula q))
@@ -136,7 +137,7 @@ evaluaArbol (Node SyssOp [p, q]) i = (not (evaluaArbol p i ) || (evaluaArbol q i
 -- -----------------------------------------------------------
 -- 1. funcion que cuenta el numero de elementos de un arbol --
 -- -----------------------------------------------------------
-cantidadElementos :: Arbol Operador -> Int
+cantidadElementos :: Arbol a -> Int
 cantidadElementos Void = 0
 cantidadElementos (Node x []) = 1
 cantidadElementos (Node x [y]) = 1 + cantidadElementos y
